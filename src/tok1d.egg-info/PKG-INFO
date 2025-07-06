@@ -1,0 +1,17 @@
+Metadata-Version: 2.4
+Name: tok1d
+Version: 0.1.0
+Summary: 1D tokenizers.
+Classifier: Natural Language :: English
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: black
+Requires-Dist: flake8
+Dynamic: license-file
+
+# tok1d -- Python Packaging for 1D Visual Tokenization and Generation
+
