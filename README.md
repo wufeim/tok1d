@@ -18,15 +18,44 @@ pip install git+https://github.com/wufeim/tok1d.git
 pip install git+https://github.com/wufeim/tok1d.git
 ```
 
-## Usage
+## Examlpe Usage
 
 ```py
-from tok1d.modeling.titok import TiTok
+from io import BytesIO
+import requests
 
-titok_tokenizer = TiTok.from_pretrained("yucornetto/tokenizer_titok_l32_imagenet")
+import numpy as np
+from PIL import Image
+import torch
+
+from tok1d.modeling.titok import TiTok
+from tok1d.utils import example_images
+
+titok_tokenizer = TiTok.from_pretrained(
+    'yucornetto/tokenizer_titok_l32_imagenet')
 titok_tokenizer.eval()
 titok_tokenizer.requires_grad_(False)
 titok_tokenizer.to('cuda')
+
+url = example_images[1]
+response = requests.get(url)
+image = Image.open(BytesIO(response.content))
+
+image_tensor = torch.from_numpy(
+    np.array(image).astype(np.float32)
+).permute(2, 0, 1).unsqueeze(0) / 255.0
+
+encoded_tokens = titok_tokenizer.encode(
+    image_tensor.to('cuda'))[1]['min_encoding_indices']
+
+def decode(tokens):
+    recon = titok_tokenizer.decode_tokens(tokens)
+    recon = torch.clamp(recon, 0.0, 1.0)
+    recon = (recon * 255.0).permute(0, 2, 3, 1).to(
+        'cpu', dtype=torch.uint8).numpy()[0]
+    return Image.fromarray(recon)
+
+decoded_image = decode(encoded_tokens)
 ```
 
 ## Citing
